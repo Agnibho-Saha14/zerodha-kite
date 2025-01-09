@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-
+import { Settings, Layout, ChevronDown, Search, Bell, User, Menu } from 'lucide-react';
 import {ColorType,createChart} from "lightweight-charts";
 import './index.css'
 import MainChart from './MainChart';

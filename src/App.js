@@ -74,8 +74,8 @@ const TradingPlatform = () => {
     
         <div className="navbar">
           <div className="indices">
-            <span>NIFTY 50 <strong></strong></span>
-            <span>SENSEX <strong></strong> </span>
+            <span>NIFTY 50 <strong>0.00</strong></span>
+            <span>SENSEX <strong>0.00</strong> </span>
           </div>
           <div className="menu">
             <a href="#">Dashboard</a>
@@ -132,44 +132,8 @@ const TradingPlatform = () => {
 
   
 
-  const VolumeChart = () => (
-    <div className="bg-white p-4 rounded-lg" style={{ height: '200px' }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={stockData}>
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="volume" fill="#93C5FD" />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-
-  const MarketDepth = () => (
-    <div className="bg-white rounded-lg p-4">
-      <h2 className="text-lg font-semibold mb-4">Market Depth</h2>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h3 className="text-green-500 font-medium mb-2">Bids</h3>
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex justify-between text-sm mb-1">
-              <span>{(Math.random() * 1000).toFixed(2)}</span>
-              <span>{Math.floor(Math.random() * 1000)}</span>
-            </div>
-          ))}
-        </div>
-        <div>
-          <h3 className="text-red-500 font-medium mb-2">Asks</h3>
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex justify-between text-sm mb-1">
-              <span>{(Math.random() * 1000).toFixed(2)}</span>
-              <span>{Math.floor(Math.random() * 1000)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-100">

@@ -6,6 +6,7 @@ const MainChart = ({ stockData, chartType, showIndicators }) => {
   const chartRef = useRef(null);
   const seriesRef = useRef(null);
 
+  // Initialize the chart on first render
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -22,43 +23,59 @@ const MainChart = ({ stockData, chartType, showIndicators }) => {
       height: 500,
     });
 
-    // Add margin for better visibility
     chart.applyOptions({
       rightPriceScale: {
         borderVisible: false,
       },
       timeScale: {
         borderVisible: false,
+        timeVisible: true,
+        secondsVisible: false,
       },
     });
 
     chartRef.current = chart;
 
-    
     return () => {
       chart.remove();
     };
   }, []);
 
+  // Update the chart whenever stockData, chartType, or showIndicators changes
   useEffect(() => {
-    if (!chartRef.current || !stockData.length) return;
+    if (!chartRef.current || !stockData || stockData.length === 0) {
+      console.warn('No stock data available or chart not initialized.');
+      return;
+    }
 
-  
+    // Remove previous series if it exists
     if (seriesRef.current) {
       chartRef.current.removeSeries(seriesRef.current);
     }
 
-    
-    const formattedData = stockData.map(item => ({
-      time: item.date,
-      value: item.close,
-      open: item.open,
-      high: item.high,
-      low: item.low,
-      close: item.close,
-    }));
+    const getTimestamp = (dateStr) => {
+      const [day, month, year] = dateStr.split('-').map(num => parseInt(num, 10));
+      const date = new Date(year, month - 1, day, 12, 0, 0, 0);
+      return Math.floor(date.getTime() / 1000);
+    };
 
-    // Create appropriate series based on chart type
+    // Process and deduplicate stock data
+    const processedData = Object.values(
+      stockData.reduce((acc, item) => {
+        const timestamp = getTimestamp(item.Date);
+        acc[timestamp] = {
+          time: timestamp,
+          value: parseFloat(item.Close),
+          open: parseFloat(item.Open),
+          high: parseFloat(item.High),
+          low: parseFloat(item.Low),
+          close: parseFloat(item.Close),
+        };
+        return acc;
+      }, {})
+    ).sort((a, b) => a.time - b.time);
+
+    // Determine the series type and set data
     let series;
     switch (chartType) {
       case 'Candles':
@@ -79,11 +96,19 @@ const MainChart = ({ stockData, chartType, showIndicators }) => {
       case 'Coloured Bar':
         series = chartRef.current.addHistogramSeries({
           color: '#2563eb',
+          priceFormat: {
+            type: 'price',
+            precision: 2,
+          },
         });
         break;
       case 'Histogram':
         series = chartRef.current.addHistogramSeries({
           color: '#93C5FD',
+          priceFormat: {
+            type: 'price',
+            precision: 2,
+          },
         });
         break;
       case 'Vertex Line':
@@ -104,40 +129,47 @@ const MainChart = ({ stockData, chartType, showIndicators }) => {
         });
     }
 
-    
-    series.setData(formattedData);
+    // Set the data for the selected chart type
+    series.setData(
+      chartType === 'Candles' || chartType === 'Bar'
+        ? processedData.map(item => ({
+            time: item.time,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+          }))
+        : processedData.map(item => ({
+            time: item.time,
+            value: item.close,
+          }))
+    );
+
     seriesRef.current = series;
 
-    
+    // Fit the chart to show all data points
     chartRef.current.timeScale().fitContent();
 
-    
+    // Add optional indicators if enabled
     if (showIndicators) {
       const highSeries = chartRef.current.addLineSeries({
         color: '#10B981',
         lineStyle: 2,
         lineWidth: 1,
       });
-      
+
       const lowSeries = chartRef.current.addLineSeries({
         color: '#EF4444',
         lineStyle: 2,
         lineWidth: 1,
       });
 
-      highSeries.setData(formattedData.map(item => ({
-        time: item.time,
-        value: item.high,
-      })));
-
-      lowSeries.setData(formattedData.map(item => ({
-        time: item.time,
-        value: item.low,
-      })));
+      highSeries.setData(processedData.map(item => ({ time: item.time, value: item.high })));
+      lowSeries.setData(processedData.map(item => ({ time: item.time, value: item.low })));
     }
   }, [stockData, chartType, showIndicators]);
 
-
+  // Handle chart resizing
   useEffect(() => {
     const handleResize = () => {
       if (chartRef.current && chartContainerRef.current) {

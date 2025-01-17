@@ -84,8 +84,8 @@ const TradingPlatform = () => {
   const Navbar = () => (
     <div className="navbar">
       <div className="indices">
-        <span>NIFTY 50 <strong>0.00</strong></span>
-        <span>SENSEX <strong>0.00</strong> </span>
+        <span>NIFTY 50 <strong>23311.80</strong></span>
+        <span>SENSEX <strong>77042.82</strong> </span>
       </div>
       <div className="menu">
         <a href="#">Dashboard</a>

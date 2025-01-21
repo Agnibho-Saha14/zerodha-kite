@@ -7,7 +7,7 @@ A lightweight web frontend inspired by Zerodha Kite, designed to display financi
 ## Features
 
 - Fetches data from Yahoo Finance.
-- Displays real-time data for selected companies in a user-friendly dashboard.
+- Displays data for selected companies in a user-friendly dashboard.
 
 ## Prerequisites
 

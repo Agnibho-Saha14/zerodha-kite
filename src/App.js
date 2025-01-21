@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Layout, ChevronDown, Search, Bell, User, Menu } from 'lucide-react';
+import { Settings, Layout, ChevronDown, Search, User, Menu } from 'lucide-react';
 import './index.css'
 import MainChart from './MainChart';
 import { getCompanyInfo, getBasePrice, getVolatility } from './mockData';
-import stockData from './new_data.json';
+import stockData from './modified_data.json';
 
 const TradingPlatform = () => {
   const [chartData, setChartData] = useState([]);
@@ -15,38 +15,47 @@ const TradingPlatform = () => {
   
   useEffect(() => {
     const timeframeDays = {
-      '1D': 1,
-      '5D': 5,
+      
+      
       '1M': 30,
       '3M': 90,
+      '5M':150,
       '6M': 180,
       'YTD': Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24)),
       '1Y': 365,
-      '5Y': 1825
+      '5Y': 1825,
     };
-    
-    const days = timeframeDays[selectedTimeframe] || 30;
-    
-    // Ensure we have data before filtering
-    if (stockData && stockData.length > 0) {
-      const filteredData = stockData.filter(item => {
-        if (item.Symbol !== selectedStock) return false; // Match selected stock
-        if (!item.Date) return false;
-        const [day, month, year] = item.Date.split('-').map(num => parseInt(num, 10));
-        const itemDate = new Date(year, month - 1, day);
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - days);
-        return itemDate >= cutoffDate;
-      });
-      setChartData(filteredData);
-    
-    
-      
   
+    const days = timeframeDays[selectedTimeframe] || 30;
+  
+    if (stockData && stockData.length > 0) {
+      const filteredData = stockData
+        .filter(item => {
+          if (item.Symbol !== selectedStock || !item.Date) return false;
+  
+          // Parse the date in "DD-MM-YYYY" format
+          const [day, month, year] = item.Date.split('-').map(num => parseInt(num, 10));
+          const itemDate = new Date(year, month - 1, day);
+  
+          // Calculate cutoff date for the timeframe
+          const cutoffDate = new Date('2025-01-10');
+          cutoffDate.setDate(cutoffDate.getDate() - days);
+  
+          // Include only data within the timeframe
+          return itemDate >= cutoffDate;
+        })
+        .sort((a, b) => {
+          // Sort by ascending date
+          const dateA = new Date(...a.Date.split('-').reverse().map(Number));
+          const dateB = new Date(...b.Date.split('-').reverse().map(Number));
+          return dateA - dateB;
+        });
+  
+      setChartData(filteredData);
     }
-    
     setCompanyInfo(getCompanyInfo(selectedStock));
   }, [selectedTimeframe, selectedStock]);
+  
 
   const WatchList = () => (
     <div className="bg-white rounded-lg p-4">
@@ -95,6 +104,7 @@ const TradingPlatform = () => {
         <a href="#">Bids</a>
         <a href="#">Funds</a>
       </div>
+      <div className="logonavbar"><img src="./logo.png" alt="zerodha logo"></img></div>
       <div className="profile">USER</div>
     </div>
   );
@@ -108,7 +118,7 @@ const TradingPlatform = () => {
           onChange={(e) => setSelectedTimeframe(e.target.value)}
         >
           <option value="" disabled>Views</option>
-          {['1D', '5D', '1M', '3M', '6M', 'YTD', '1Y', '5Y'].map((tf) => (
+          {['1M', '3M','5M', '6M','1Y','5Y'].map((tf) => (
             <option key={tf} value={tf}>{tf}</option>
           ))}
         </select>
@@ -119,7 +129,7 @@ const TradingPlatform = () => {
           onChange={(e)=>setChartType(e.target.value)}
         >
           <option value="" disabled>Chart Types</option>
-          {['Line','Candles' ,'Vertex Line', 'Bar', 'Coloured Bar', 'Histogram'].map((charttype) => (
+          {['Line','Candles','Histogram'].map((charttype) => (
             <option key={charttype} value={charttype}>{charttype}</option>
           ))}
         </select>
@@ -148,6 +158,7 @@ const TradingPlatform = () => {
               stockData={chartData}
               chartType={chartType}
               showIndicators={showIndicators}
+              
             />
           </div>
         </div>

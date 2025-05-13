@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/zerodha-kite/static/css/main.64ddb568.css",
+    "main.js": "/zerodha-kite/static/js/main.e822c28b.js",
+    "static/js/488.2cabd63a.chunk.js": "/zerodha-kite/static/js/488.2cabd63a.chunk.js",
+    "index.html": "/zerodha-kite/index.html",
+    "main.64ddb568.css.map": "/zerodha-kite/static/css/main.64ddb568.css.map",
+    "main.e822c28b.js.map": "/zerodha-kite/static/js/main.e822c28b.js.map",
+    "488.2cabd63a.chunk.js.map": "/zerodha-kite/static/js/488.2cabd63a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.64ddb568.css",
+    "static/js/main.e822c28b.js"
+  ]
+}
